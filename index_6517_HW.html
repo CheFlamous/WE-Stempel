@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Check-in</title>
+</head>
+<body>
+  <p>Check-In läuft...</p>
+  <script>
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    const code = "6517" + month + day + year + "HW";
+
+    console.log("Gesendeter Code:", code);
+
+    fetch("https://prod-53.westeurope.logic.azure.com:443/workflows/2bdd4dae0a594444a8706ab02f0f38f5/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2x_BH04g-I749xP0EkWxCXqS2ITtjVvALXvX2wBuYPc", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "code": code
+      })
+    })
+    .then(response => response.text().then(text => {
+      if (response.ok) {
+        document.body.innerHTML = "<h3>Erfolgreich!</h3><pre>" + text + "</pre>";
+      } else {
+        document.body.innerHTML = "<h3>Fehler beim Check-In</h3><pre>" + text + "</pre>";
+      }
+    }))
+    .catch(error => {
+      document.body.innerHTML = "<h3>Fetch-Fehler</h3><pre>" + error + "</pre>";
+      console.error(error);
+    });
+  </script>
+</body>
+</html>
